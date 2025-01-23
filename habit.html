@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Habit Tracker</title>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet">
+  <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    /* General Styles */
+    body {
+      background: #181818;
+      color: #e0e0e0;
+      font-family: 'Poppins', sans-serif;
+    }
+
+    h1 {
+      color: #fff;
+      margin-bottom: 20px;
+      text-align: center;
+    }
+
+    .glass-effect {
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 15px;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      backdrop-filter: blur(12px);
+      padding: 15px;
+      margin-bottom: 20px;
+    }
+
+    .btn {
+      background-color: #1959c9;
+      color: white;
+      border: none;
+      padding: 10px 15px;
+      border-radius: 5px;
+      transition: background-color 0.3s ease;
+    }
+
+    .btn:hover {
+      background-color: #007bff;
+    }
+
+    .habit-card {
+      margin-bottom: 20px;
+      padding: 15px;
+      border-radius: 10px;
+    }
+
+    .habit-name {
+      font-weight: bold;
+      font-size: 1.2rem;
+    }
+
+    .habit-days {
+      display: flex;
+      gap: 15px;
+      align-items: center;
+      margin-top: 10px;
+    }
+
+    .habit-day {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .habit-buttons {
+      display: flex;
+      gap: 10px;
+    }
+
+    .modal-content {
+      background-color: #181818;
+      color: #e0e0e0;
+      border-radius: 15px;
+    }
+
+    #habit-input {
+      background-color: #2b2b2b;
+      color: #e0e0e0;
+      border: 1px solid #444;
+      border-radius: 5px;
+    }
+    .navbar-toggler {
+      background-color: #1445c1;
+    }
+
+    .navbar {
+      background-color: #2b2b2b;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+    }
+
+    .nav-link {
+      color: #b9cce1 !important;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <nav class="navbar navbar-expand-lg navbar-dark">
+    <div class="container">
+      <a class="navbar-brand" href="#">MediPlanner</a>
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ml-auto">
+          <li class="nav-item">
+            <a class="nav-link" href="index.html">Home</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <div class="container my-5">
+    <div class="text-center">
+      <h1>Habit Tracker</h1>
+      <p class="lead">Track your habits and stay consistent.</p>
+    </div>
+
+    <!-- Habit List -->
+    <div id="habit-list"></div>
+
+    <!-- Add Habit Button -->
+    <div class="text-center mt-4">
+      <button class="btn" id="add-habit-btn">Add Habit</button>
+    </div>
+
+    <!-- Habit Modal -->
+    <div class="modal" tabindex="-1" id="habitModal">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Add/Edit Habit</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <input type="text" id="habit-input" class="form-control" placeholder="Enter habit name">
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            <button type="button" id="save-habit-btn" class="btn">Save</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const habitList = document.getElementById("habit-list");
+      const addHabitBtn = document.getElementById("add-habit-btn");
+      const habitModal = document.getElementById("habitModal");
+      const saveHabitBtn = document.getElementById("save-habit-btn");
+      const habitInput = document.getElementById("habit-input");
+
+      let habits = JSON.parse(localStorage.getItem("habits")) || [];
+      let editingHabit = null;
+
+      const saveHabits = () => {
+        localStorage.setItem("habits", JSON.stringify(habits));
+      };
+
+      const renderHabits = () => {
+        habitList.innerHTML = "";
+        habits.forEach((habit, index) => {
+          createHabitElement(habit, index);
+        });
+      };
+
+      const createHabitElement = ({ name, progress }, index) => {
+        const habitCard = document.createElement("div");
+        habitCard.className = "habit-card glass-effect";
+        habitCard.innerHTML = `
+          <h5 class="habit-name">${name}</h5>
+          <div class="d-flex align-items-center justify-content-between">
+            <div class="habit-days">
+              ${["S", "M", "T", "W", "T", "F", "S"]
+                .map(
+                  (day, dayIndex) =>
+                    `<div class="habit-day">
+                      <span>${day}</span>
+                      <input type="checkbox" class="day-checkbox" ${
+                        progress && progress[dayIndex] ? "checked" : ""
+                      }>
+                    </div>`
+                )
+                .join("")}
+            </div>
+            <div class="habit-buttons">
+              <button class="btn edit-btn"><i class="fas fa-pencil-alt"></i></button>
+              <button class="btn delete-btn"><i class="fas fa-trash-alt"></i></button>
+            </div>
+          </div>
+        `;
+
+        habitList.appendChild(habitCard);
+
+        // Edit Habit
+        habitCard.querySelector(".edit-btn").addEventListener("click", () => {
+          editingHabit = index;
+          habitInput.value = name;
+          $(habitModal).modal("show");
+        });
+
+        // Delete Habit
+        habitCard.querySelector(".delete-btn").addEventListener("click", () => {
+          habits.splice(index, 1);
+          saveHabits();
+          renderHabits();
+        });
+
+        // Save progress on checkbox change
+        habitCard.querySelectorAll(".day-checkbox").forEach((checkbox, dayIndex) => {
+          checkbox.addEventListener("change", () => {
+            habits[index].progress[dayIndex] = checkbox.checked;
+            saveHabits();
+          });
+        });
+      };
+
+      // Add/Edit Habit
+      saveHabitBtn.addEventListener("click", () => {
+        const name = habitInput.value.trim();
+        if (!name) return;
+
+        if (editingHabit !== null) {
+          habits[editingHabit].name = name;
+        } else {
+          habits.push({ name, progress: Array(7).fill(false) });
+        }
+
+        saveHabits();
+        renderHabits();
+        editingHabit = null;
+        habitInput.value = "";
+        $(habitModal).modal("hide");
+      });
+
+      addHabitBtn.addEventListener("click", () => {
+        editingHabit = null;
+        habitInput.value = "";
+        $(habitModal).modal("show");
+      });
+
+      renderHabits();
+    });
+  </script>
+
+  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>

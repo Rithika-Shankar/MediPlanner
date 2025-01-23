@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>To-Do List - MediPlanner</title>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet">
+  <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+
+  <!-- Embedded CSS -->
+  <style>
+    /* Body and General Styles */
+    body {
+      background: #181818;
+      color: #e0e0e0;
+      font-family: 'Poppins', sans-serif;
+    }
+
+    /* Heading and Titles */
+    h1, h3 {
+      font-weight: 600;
+      color: #fff;
+      margin-bottom: 20px;
+    }
+
+    /* Glass Effect Cards */
+    .glass-effect {
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 15px;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      backdrop-filter: blur(12px);
+    }
+
+    /* Shadow Effect Cards */
+    .shadow-glass {
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 15px;
+      border: 1px solid rgba(27, 18, 18, 0.1);
+      backdrop-filter: blur(10px);
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+    }
+
+    /* Card Hover Effects */
+    .card {
+      cursor: pointer;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      margin-bottom: 20px;
+    }
+
+    .card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+    }
+
+    /* Card Body Content */
+    .card-body {
+      text-align: center;
+    }
+
+    /* Card Titles */
+    .card-title {
+      font-weight: 600;
+      margin-bottom: 10px;
+      color: #fff;
+    }
+
+    /* Task List */
+    .list-group-item {
+      background-color: #2b2b2b;
+      color: #e0e0e0;
+      border: none;
+      border-radius: 10px;
+      margin-bottom: 10px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px;
+      font-size: 1.1rem;
+    }
+
+    .list-group-item button {
+      background-color: transparent;
+      color: #fff;
+      border: none;
+      padding: 5px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    .list-group-item button:hover {
+      background-color: #444;
+    }
+
+    /* Task Checkbox */
+    .list-group-item .checkbox {
+      cursor: pointer;
+    }
+
+    /* Add Task Modal */
+    .modal-content {
+      background-color: #181818;
+      color: #e0e0e0;
+      border-radius: 15px;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      backdrop-filter: blur(12px);
+    }
+
+    /* Modal Input */
+    #task-input {
+      background-color: #2b2b2b;
+      color: #e0e0e0;
+      border-radius: 5px;
+      border: 1px solid #444;
+    }
+
+    /* Button Styles */
+    .btn {
+      background-color: #1959c9;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      padding: 10px 20px;
+      transition: background-color 0.3s ease;
+    }
+
+    .btn:hover {
+      background-color: #007bff;
+    }
+
+    /* Task Completion Styling */
+    .completed {
+      text-decoration: line-through;
+      color: #888;
+    }
+
+    /* Task Buttons Flexbox */
+    .task-buttons {
+      display: flex;
+      justify-content: space-between;
+      width: 80px;
+    }
+
+    .task-buttons button {
+      margin: 0 5px;
+    }
+
+    /* Navbar Styles */
+    .navbar {
+      background-color: #2b2b2b;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+    }
+
+    .navbar-brand, .navbar-toggler-icon {
+      color: #fff;
+    }
+
+    .navbar-toggler {
+      background-color: #1445c1;
+    }
+  </style>
+</head>
+<body>
+  <!-- Navbar (Burger Menu) -->
+  <nav class="navbar navbar-expand-lg">
+    <a class="navbar-brand" href="#">MediPlanner</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="fas fa-bars"></span> <!-- This will display the 3-line hamburger icon -->
+      </button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav ml-auto">
+        <li class="nav-item">
+            <a class="nav-link" href="index.html" style="color: #b9cce1; font-weight: bold;">Home</a>
+          </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#" id="show-patients" style="font-weight: bold;">Patients</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#" id="show-research" style="font-weight: bold;">Personal</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#" id="show-admin" style="font-weight: bold;">Administrative</a>
+        </li>
+      </ul>
+    </div>
+  </nav>
+
+  <div class="container my-5">
+    <div class="text-center">
+      <h1>To-Do List</h1>
+      <p class="lead">Manage your tasks efficiently.</p>
+    </div>
+
+    <!-- Task Categories Section -->
+    <div class="row">
+      <div class="col-md-4">
+        <div class="card shadow-glass" id="patients-section">
+          <div class="card-body">
+            <h5 class="card-title">Patients</h5>
+            <ul id="patients-list" class="list-group">
+              <!-- Tasks will be dynamically added here -->
+            </ul>
+            <button id="add-patient-task" class="btn btn-sm mt-2">Add Task</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-4">
+        <div class="card shadow-glass" id="research-section">
+          <div class="card-body">
+            <h5 class="card-title">Personal</h5>
+            <ul id="research-list" class="list-group">
+              <!-- Tasks will be dynamically added here -->
+            </ul>
+            <button id="add-research-task" class="btn btn-sm mt-2">Add Task</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-4">
+        <div class="card shadow-glass" id="admin-section">
+          <div class="card-body">
+            <h5 class="card-title">Administrative</h5>
+            <ul id="admin-list" class="list-group">
+              <!-- Tasks will be dynamically added here -->
+            </ul>
+            <button id="add-admin-task" class="btn btn-sm mt-2">Add Task</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal for Adding Tasks -->
+  <div class="modal" tabindex="-1" role="dialog" id="taskModal">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Add Task</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <input type="text" id="task-input" class="form-control" placeholder="Enter your task">
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          <button type="button" id="save-task" class="btn">Save Task</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const addPatientTaskBtn = document.getElementById("add-patient-task");
+      const addResearchTaskBtn = document.getElementById("add-research-task");
+      const addAdminTaskBtn = document.getElementById("add-admin-task");
+      const taskModal = document.getElementById("taskModal");
+      const saveTaskBtn = document.getElementById("save-task");
+      const taskInput = document.getElementById("task-input");
+      let currentListId = "";
+      let editingTask = null;
+  
+      // Show the appropriate task list when a category is selected from the burger menu
+      document.getElementById("show-patients").addEventListener("click", () => {
+        document.getElementById("patients-section").style.display = "block";
+        document.getElementById("research-section").style.display = "none";
+        document.getElementById("admin-section").style.display = "none";
+      });
+  
+      document.getElementById("show-research").addEventListener("click", () => {
+        document.getElementById("patients-section").style.display = "none";
+        document.getElementById("research-section").style.display = "block";
+        document.getElementById("admin-section").style.display = "none";
+      });
+  
+      document.getElementById("show-admin").addEventListener("click", () => {
+        document.getElementById("patients-section").style.display = "none";
+        document.getElementById("research-section").style.display = "none";
+        document.getElementById("admin-section").style.display = "block";
+      });
+    });
+
+    //NEXT PART
+    document.addEventListener("DOMContentLoaded", () => {
+  const addPatientTaskBtn = document.getElementById("add-patient-task");
+  const addResearchTaskBtn = document.getElementById("add-research-task");
+  const addAdminTaskBtn = document.getElementById("add-admin-task");
+  const taskModal = document.getElementById("taskModal");
+  const saveTaskBtn = document.getElementById("save-task");
+  const taskInput = document.getElementById("task-input");
+  let currentListId = "";
+  let editingTask = null;
+
+  // Load tasks from local storage
+  function loadTasks() {
+    const savedTasks = JSON.parse(localStorage.getItem("tasks")) || {};
+    Object.keys(savedTasks).forEach((listId) => {
+      const tasks = savedTasks[listId];
+      tasks.forEach((taskText) => createOrUpdateTaskElement(taskText, listId));
+    });
+  }
+
+  // Save tasks to local storage
+  function saveTasks() {
+    const taskLists = ["patients-list", "research-list", "admin-list"];
+    const tasks = {};
+    taskLists.forEach((listId) => {
+      const list = document.getElementById(listId);
+      const taskItems = list.querySelectorAll(".list-group-item span");
+      tasks[listId] = Array.from(taskItems).map((item) => item.textContent);
+    });
+    localStorage.setItem("tasks", JSON.stringify(tasks));
+  }
+
+  // Create or update task element
+  function createOrUpdateTaskElement(taskText, listId) {
+    const taskList = document.getElementById(listId);
+    const taskElement = document.createElement("li");
+    taskElement.classList.add("list-group-item");
+    taskElement.innerHTML = `
+      <span>${taskText}</span>
+      <div class="task-buttons">
+        <button class="edit-btn"><i class="fas fa-pencil-alt"></i></button>
+        <button class="delete-btn"><i class="fas fa-trash-alt"></i></button>
+      </div>
+    `;
+
+    // Add event listeners for edit and delete buttons
+    taskElement.querySelector(".edit-btn").addEventListener("click", () => {
+      editingTask = taskElement;
+      taskInput.value = taskText;
+      $(taskModal).modal("show");
+    });
+
+    taskElement.querySelector(".delete-btn").addEventListener("click", () => {
+      taskElement.remove();
+      saveTasks(); // Save changes
+    });
+
+    taskList.appendChild(taskElement);
+  }
+
+  // Event listeners for opening the modal
+  addPatientTaskBtn.addEventListener("click", () => {
+    currentListId = "patients-list";
+    editingTask = null;
+    taskInput.value = "";
+    $(taskModal).modal("show");
+  });
+
+  addResearchTaskBtn.addEventListener("click", () => {
+    currentListId = "research-list";
+    editingTask = null;
+    taskInput.value = "";
+    $(taskModal).modal("show");
+  });
+
+  addAdminTaskBtn.addEventListener("click", () => {
+    currentListId = "admin-list";
+    editingTask = null;
+    taskInput.value = "";
+    $(taskModal).modal("show");
+  });
+
+  // Save or edit task
+  saveTaskBtn.addEventListener("click", () => {
+    const taskText = taskInput.value.trim();
+    if (!taskText) return;
+
+    if (editingTask) {
+      editingTask.querySelector("span").textContent = taskText;
+    } else {
+      createOrUpdateTaskElement(taskText, currentListId);
+    }
+    saveTasks(); // Save changes
+    $(taskModal).modal("hide");
+  });
+
+  // Load tasks on page load
+  loadTasks();
+});
+
+  </script>
+  
+</body>
+</html>

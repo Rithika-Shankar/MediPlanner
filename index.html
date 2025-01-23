@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MediPlanner</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body class="dark-theme">
+  <!-- Navbar -->
+  <nav class="navbar navbar-expand-lg navbar-dark bg-gradient shadow">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="#">
+            <img src="assets\images\logo.png" alt="MediPlanner Logo" class="logo-img">
+            <span class="ms-2">MediPlanner</span>
+          </a>
+    </div>
+  </nav>
+
+  <!-- Main Section -->
+  <div class="container mt-4">
+    <h1 class="text-center mb-4 text-light">MediPlanner</h1>
+    <p class="text-center">Your Ultimate Companion for Personal and Professional Growth</p>
+    
+    <div class="row g-4">
+      <!-- Card 1: To-Do List -->
+      <div class="col-md-4" onclick="location.href='todo.html';">
+        <div class="card shadow-glass p-3 clickable-card" data-bs-toggle="modal" data-bs-target="#todoModal">
+          <div class="card-body">
+            <h5 class="card-title text-primary">To-Do List</h5>
+            <p class="card-text">Organize your tasks for patients, research, and administrative work.</p>
+            <i class="fas fa-check-circle fa-3x text-primary"></i>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card 2: Habit Tracker -->
+      <div class="col-md-4" onclick="location.href='habit.html';">
+        <div class="card shadow-glass p-3 clickable-card" data-bs-toggle="modal" data-bs-target="#habitModal">
+          <div class="card-body">
+            <h5 class="card-title text-primary">Habit Tracker</h5>
+            <p class="card-text">Track and manage your health habits with progress reports.</p>
+            <i class="fas fa-chart-pie fa-3x text-primary"></i>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card 3: Medical Tools -->
+      <div class="col-md-4" onclick="location.href='tools.html';">
+        <div class="card shadow-glass p-3 clickable-card" data-bs-toggle="modal" data-bs-target="#toolsModal">
+          <div class="card-body">
+            <h5 class="card-title text-primary">Medical Tools</h5>
+            <p class="card-text">Access BMI calculators and drug adverse effects.</p>
+            <i class="fas fa-cogs fa-3x text-primary"></i>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card 4: Patient Notes -->
+      <div class="col-md-4" onclick="location.href='notes.html';">
+        <div class="card shadow-glass p-3 clickable-card" data-bs-toggle="modal" data-bs-target="#notesModal">
+          <div class="card-body">
+            <h5 class="card-title text-primary">Patient Notes</h5>
+            <p class="card-text">Keep secure notes for each patient with voice-to-text support.</p>
+            <i class="fas fa-notes-medical fa-3x text-primary"></i>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card 5: Smart Scheduler -->
+      <div class="col-md-4" onclick="location.href='schedule.html';">
+        <div class="card shadow-glass p-3 clickable-card" data-bs-toggle="modal" data-bs-target="#schedulerModal">
+          <div class="card-body">
+            <h5 class="card-title text-primary">Self-Care & Wellness Tracker</h5>
+            <p class="card-text">Track your sleep, hydration, meals, stress levels, and mental health.</p>
+            <i class="fas fa-user fa-3x text-primary"></i>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card 6: Medical Library -->
+      <div class="col-md-4" onclick="location.href='lib.html';">
+        <div class="card shadow-glass p-3 clickable-card" data-bs-toggle="modal" data-bs-target="#libraryModal">
+          <div class="card-body">
+            <h5 class="card-title text-primary">Medical Library</h5>
+            <p class="card-text">Search and bookmark medical resources for easy access.</p>
+            <i class="fas fa-book-medical fa-3x text-primary"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="text-center py-3 bg-dark text-light mt-5">
+    <p>&copy; 2025 MediPlanner. All Rights Reserved.</p>
+  </footer>
+
+  <!-- Modal Content Placeholder -->
+  <div class="modal fade" id="todoModal" tabindex="-1" aria-labelledby="todoModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="todoModalLabel">To-Do List</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <!-- To-Do List Functionality Goes Here -->
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Add similar modals for each feature... -->
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="js/script.js"></script>
+</body>
+</html>

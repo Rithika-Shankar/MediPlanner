@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Patient Notes</title>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet">
+  <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    body {
+      background: #181818;
+      color: #e0e0e0;
+      font-family: 'Poppins', sans-serif;
+    }
+    h1 {
+      color: #fff;
+      margin-bottom: 20px;
+    }
+    .glass-effect {
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 15px;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      backdrop-filter: blur(12px);
+      padding: 15px;
+      margin-bottom: 20px;
+    }
+    .btn {
+      background-color: #1959c9;
+      color: white;
+      border: none;
+      padding: 10px 15px;
+      border-radius: 5px;
+      transition: background-color 0.3s ease;
+    }
+    .btn:hover {
+      background-color: #007bff;
+    }
+    .note-card {
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 10px;
+      padding: 15px;
+      margin-bottom: 15px;
+    }
+    .navbar {
+      background-color: #2b2b2b;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+    }
+    .navbar .nav-link {
+      color: #b9cce1;
+      font-weight: bold;
+    }
+    .navbar-toggler {
+      background-color: #1445c1;
+    }
+  </style>
+</head>
+<body>
+  <nav class="navbar navbar-expand-lg">
+    <div class="container">
+      <a class="navbar-brand" href="#" style="color: #fff;">MediPlanner</a>
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon" style="color: #fff;">☰</span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ml-auto">
+          <li class="nav-item">
+            <a class="nav-link" href="index.html">Home</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <div class="container my-5">
+    <div class="text-center">
+      <h1>Patient Notes</h1>
+      <p class="lead">Keep secure notes for each patient with voice-to-text support.</p>
+    </div>
+
+    <!-- Add Note Section -->
+    <div class="glass-effect p-4 mb-4">
+      <h4 class="mb-3">Add a New Note</h4>
+      <form id="note-form">
+        <div class="form-row">
+          <div class="col-md-6 mb-3">
+            <label for="patient-name">Patient Name</label>
+            <input type="text" class="form-control" id="patient-name" placeholder="Enter patient name" required>
+          </div>
+          <div class="col-md-12 mb-3">
+            <label for="note-content">Note</label>
+            <textarea class="form-control" id="note-content" rows="4" placeholder="Type or use voice-to-text..." required></textarea>
+          </div>
+        </div>
+        <button type="button" class="btn btn-primary" id="voice-to-text-btn">🎙️ Voice-to-Text</button>
+        <button type="submit" class="btn btn-primary">Add Note</button>
+      </form>
+    </div>
+
+    <!-- Notes Display Section -->
+    <div class="glass-effect p-4">
+      <h4 class="mb-3">Patient Notes</h4>
+      <div id="notes-container">
+        <p>No notes available. Add a new note above.</p>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const notesContainer = document.getElementById('notes-container');
+    const noteForm = document.getElementById('note-form');
+    const voiceToTextBtn = document.getElementById('voice-to-text-btn');
+    const noteContent = document.getElementById('note-content');
+
+    // Load notes from localStorage
+    let notes = JSON.parse(localStorage.getItem('patientNotes')) || [];
+
+    // Save notes to localStorage
+    function saveNotesToLocalStorage() {
+      localStorage.setItem('patientNotes', JSON.stringify(notes));
+    }
+
+    // Handle adding a new note
+    noteForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+
+      const patientName = document.getElementById('patient-name').value.trim();
+      const content = noteContent.value.trim();
+
+      if (patientName && content) {
+        notes.push({ name: patientName, note: content, date: new Date().toLocaleString() });
+        saveNotesToLocalStorage();
+        renderNotes();
+        noteForm.reset();
+      }
+    });
+
+    // Render notes
+    function renderNotes() {
+      notesContainer.innerHTML = '';
+      if (notes.length === 0) {
+        notesContainer.innerHTML = '<p>No notes available. Add a new note above.</p>';
+        return;
+      }
+      notes.forEach((note, index) => {
+        const noteCard = document.createElement('div');
+        noteCard.className = 'note-card';
+        noteCard.innerHTML = `
+          <h5>${note.name}</h5>
+          <p>${note.note}</p>
+          <small class="text-muted">${note.date}</small>
+          <button class="btn btn-danger btn-sm mt-2" onclick="deleteNote(${index})">Delete</button>
+          <button class="btn btn-warning btn-sm mt-2 ml-2" onclick="editNote(${index})">Edit</button>
+        `;
+        notesContainer.appendChild(noteCard);
+      });
+    }
+
+    // Delete a note
+    function deleteNote(index) {
+      notes.splice(index, 1);
+      saveNotesToLocalStorage();
+      renderNotes();
+    }
+
+    // Edit a note
+    function editNote(index) {
+      const note = notes[index];
+      document.getElementById('patient-name').value = note.name;
+      noteContent.value = note.note;
+      
+      // Change the form submission to update the note
+      noteForm.onsubmit = (e) => {
+        e.preventDefault();
+        note.name = document.getElementById('patient-name').value.trim();
+        note.note = noteContent.value.trim();
+        note.date = new Date().toLocaleString(); // Update the date on edit
+        saveNotesToLocalStorage();
+        renderNotes();
+        noteForm.reset();
+      };
+    }
+
+    // Voice-to-text functionality
+    voiceToTextBtn.addEventListener('click', () => {
+      if (!('webkitSpeechRecognition' in window)) {
+        alert('Speech recognition is not supported in this browser.');
+        return;
+      }
+      const recognition = new webkitSpeechRecognition();
+      recognition.lang = 'en-US';
+      recognition.interimResults = false;
+      recognition.maxAlternatives = 1;
+
+      recognition.start();
+
+      recognition.onresult = (event) => {
+        const transcript = event.results[0][0].transcript;
+        noteContent.value += transcript;
+      };
+
+      recognition.onerror = (event) => {
+        alert('Error with speech recognition: ' + event.error);
+      };
+    });
+
+    // Initial render
+    renderNotes();
+  </script>
+
+  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>

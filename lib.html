@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Medical Library</title>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet">
+  <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    body {
+      background: #181818;
+      color: #e0e0e0;
+      font-family: 'Poppins', sans-serif;
+    }
+    h1 {
+      color: #fff;
+      margin-bottom: 20px;
+    }
+    .glass-effect {
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 15px;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      backdrop-filter: blur(12px);
+      padding: 15px;
+      margin-bottom: 20px;
+    }
+    .btn {
+      background-color: #1959c9;
+      color: white;
+      border: none;
+      padding: 10px 15px;
+      border-radius: 5px;
+      transition: background-color 0.3s ease;
+    }
+    .btn:hover {
+      background-color: #007bff;
+    }
+    .bookmark-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 10px;
+      padding: 10px;
+      margin-bottom: 10px;
+    }
+    .navbar {
+      background-color: #2b2b2b;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+    }
+    .navbar .nav-link {
+      color: #b9cce1;
+      font-weight: bold;
+    }
+    .navbar-toggler {
+      background-color: #1445c1;
+    }
+  </style>
+</head>
+<body>
+  <nav class="navbar navbar-expand-lg">
+    <div class="container">
+      <a class="navbar-brand" href="#" style="color: #fff;">MediPlanner</a>
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon" style="color: #fff;">☰</span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ml-auto">
+          <li class="nav-item">
+            <a class="nav-link" href="index.html">Home</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <div class="container my-5">
+    <div class="text-center">
+      <h1>Medical Library</h1>
+      <p class="lead">Search, add, and bookmark medical resources for easy access.</p>
+    </div>
+
+    <!-- Add Resource Section -->
+    <div class="glass-effect p-4 mb-4">
+      <h4 class="mb-3">Add a New Resource</h4>
+      <form id="resource-form">
+        <div class="form-row">
+          <div class="col-md-6 mb-3">
+            <label for="resource-title">Resource Title</label>
+            <input type="text" class="form-control" id="resource-title" placeholder="Enter resource title" required>
+          </div>
+          <div class="col-md-6 mb-3">
+            <label for="resource-link">Resource Link</label>
+            <input type="url" class="form-control" id="resource-link" placeholder="Enter resource URL" required>
+          </div>
+        </div>
+        <button type="submit" class="btn btn-primary">Add Resource</button>
+      </form>
+    </div>
+
+    <!-- Search and Bookmark Section -->
+    <div class="glass-effect p-4 mb-4">
+      <h4 class="mb-3">Search Resources</h4>
+      <input type="text" id="search-bar" class="form-control mb-3" placeholder="Search for a resource...">
+      <div id="search-results"></div>
+    </div>
+
+    <!-- Bookmarked Resources Section -->
+    <div class="glass-effect p-4">
+      <h4 class="mb-3">Bookmarked Resources</h4>
+      <div id="bookmarks-container">
+        <p>No bookmarks yet. Add and bookmark resources above.</p>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const resourceForm = document.getElementById('resource-form');
+    const searchBar = document.getElementById('search-bar');
+    const searchResults = document.getElementById('search-results');
+    const bookmarksContainer = document.getElementById('bookmarks-container');
+
+    let resources = JSON.parse(localStorage.getItem('medicalResources')) || [];
+    let bookmarks = JSON.parse(localStorage.getItem('bookmarkedResources')) || [];
+
+    // Save resources to localStorage
+    function saveResourcesToLocalStorage() {
+      localStorage.setItem('medicalResources', JSON.stringify(resources));
+    }
+
+    // Save bookmarks to localStorage
+    function saveBookmarksToLocalStorage() {
+      localStorage.setItem('bookmarkedResources', JSON.stringify(bookmarks));
+    }
+
+    // Render search results
+    function renderSearchResults(query) {
+      searchResults.innerHTML = '';
+      const filteredResources = resources.filter(resource => 
+        resource.title.toLowerCase().includes(query.toLowerCase())
+      );
+      if (filteredResources.length === 0) {
+        searchResults.innerHTML = '<p>No resources found.</p>';
+        return;
+      }
+      filteredResources.forEach((resource, index) => {
+        const resultItem = document.createElement('div');
+        resultItem.className = 'bookmark-item';
+        resultItem.innerHTML = `
+          <div>
+            <h5>${resource.title}</h5>
+            <a href="${resource.link}" target="_blank">${resource.link}</a>
+          </div>
+          <button class="btn btn-primary btn-sm" onclick="bookmarkResource(${index})">Bookmark</button>
+        `;
+        searchResults.appendChild(resultItem);
+      });
+    }
+
+    // Render bookmarks
+    function renderBookmarks() {
+      bookmarksContainer.innerHTML = '';
+      if (bookmarks.length === 0) {
+        bookmarksContainer.innerHTML = '<p>No bookmarks yet. Add and bookmark resources above.</p>';
+        return;
+      }
+      bookmarks.forEach((bookmark, index) => {
+        const bookmarkItem = document.createElement('div');
+        bookmarkItem.className = 'bookmark-item';
+        bookmarkItem.innerHTML = `
+          <div>
+            <h5>${bookmark.title}</h5>
+            <a href="${bookmark.link}" target="_blank">${bookmark.link}</a>
+          </div>
+          <button class="btn btn-danger btn-sm" onclick="removeBookmark(${index})">Remove</button>
+        `;
+        bookmarksContainer.appendChild(bookmarkItem);
+      });
+    }
+
+    // Add a new resource
+    resourceForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const title = document.getElementById('resource-title').value.trim();
+      const link = document.getElementById('resource-link').value.trim();
+      if (title && link) {
+        resources.push({ title, link });
+        saveResourcesToLocalStorage();
+        resourceForm.reset();
+        renderSearchResults(searchBar.value);
+      }
+    });
+
+    // Bookmark a resource
+    function bookmarkResource(index) {
+      bookmarks.push(resources[index]);
+      saveBookmarksToLocalStorage();
+      renderBookmarks();
+    }
+
+    // Remove a bookmark
+    function removeBookmark(index) {
+      bookmarks.splice(index, 1);
+      saveBookmarksToLocalStorage();
+      renderBookmarks();
+    }
+
+    // Search resources
+    searchBar.addEventListener('input', (e) => {
+      renderSearchResults(e.target.value);
+    });
+
+    // Initial render
+    renderBookmarks();
+  </script>
+
+  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>
