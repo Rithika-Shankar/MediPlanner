@@ -21,7 +21,7 @@
 ![Patient Notes](Patient_notes.png)
 - **Medical Library**: Search and bookmark essential medical resources for quick access.
 
-![Medical Library](Medical_library.png)
+![Medical Library](Medical_lib.png)
 - **Self-Care & Wellness Tracker**: Track personal wellness, hydration, sleep, meals, and stress levels.
 
 ![Self-Care & Wellness Tracker](Wellness_tracker.png)
